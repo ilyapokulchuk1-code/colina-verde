@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scenarii Colina Verde</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #f0f2f5;
+    color: #333;
+  }
+
+  .header {
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    color: white;
+    padding: 18px 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo { display: flex; align-items: center; gap: 12px; }
+
+  .logo-icon {
+    width: 42px; height: 42px;
+    background: linear-gradient(135deg, #e94560, #f5a623);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem;
+  }
+
+  .header h1 { font-size: 1.3rem; font-weight: 700; }
+  .header span { font-size: 0.78rem; opacity: 0.65; }
+
+  .container { max-width: 960px; margin: 30px auto; padding: 0 20px; }
+
+  /* PROJECT CARD */
+  .project-card {
+    background: white;
+    border-radius: 16px;
+    padding: 25px;
+    margin-bottom: 25px;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.07);
+    border-left: 5px solid #e94560;
+  }
+
+  .project-card h2 { font-size: 1.1rem; margin-bottom: 16px; color: #1a1a2e; }
+
+  .dates-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  @media(max-width:520px){ .dates-grid { grid-template-columns: 1fr; } }
+
+  .date-field label {
+    display: block;
+    font-size: 0.72rem;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 5px;
+  }
+
+  .date-field input {
+    width: 100%;
+    padding: 10px 13px;
+    border: 2px solid #e8e8e8;
+    border-radius: 10px;
+    font-size: 0.93rem;
+    outline: none;
+    transition: border-color 0.2s;
+    font-family: inherit;
+  }
+
+  .date-field input:focus { border-color: #e94560; }
+
+  /* FILTERS */
+  .filters {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+  }
+
+  .filter-btn {
+    padding: 9px 22px;
+    border-radius: 25px;
+    border: 2px solid #e8e8e8;
+    background: white;
+    cursor: pointer;
+    font-size: 0.88rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    color: #888;
+  }
+
+  .filter-btn.active {
+    background: linear-gradient(135deg, #e94560, #f5a623);
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 4px 14px rgba(233,69,96,0.28);
+  }
+
+  /* SCENARIO CARD */
+  .scenario-card {
+    background: white;
+    border-radius: 16px;
+    margin-bottom: 18px;
+    box-shadow: 0 2px 14px rgba(0,0,0,0.07);
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .scenario-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.11);
+  }
+
+  .scenario-header {
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    color: white;
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    gap: 10px;
+  }
+
+  .scenario-header-left { flex: 1; }
+
+  .scenario-header h3 {
+    font-size: 0.97rem;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  .scenario-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 5px;
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 600;
+  }
+
+  .badge-lang-ru { background: rgba(255,255,255,0.15); }
+  .badge-lang-ro { background: rgba(245,166,35,0.3); }
+  .badge-format { background: rgba(255,255,255,0.1); color: #ccc; }
+
+  .status-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 600; }
+  .status-draft { background: #fff3cd; color: #856404; }
+  .status-review { background: #cce5ff; color: #004085; }
+  .status-approved { background: #d4edda; color: #155724; }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+
+  .comments-count {
+    background: rgba(255,255,255,0.12);
+    padding: 4px 11px;
+    border-radius: 20px;
+    font-size: 0.73rem;
+    white-space: nowrap;
+  }
+
+  .arrow { transition: transform 0.3s; font-size: 1rem; }
+  .arrow.open { transform: rotate(180deg); }
+
+  /* BODY */
+  .scenario-body { display: none; }
+  .scenario-body.open { display: block; }
+
+  /* TABS inside card */
+  .card-tabs {
+    display: flex;
+    border-bottom: 2px solid #f0f2f5;
+    background: #fafafa;
+  }
+
+  .card-tab {
+    padding: 11px 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #aaa;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.2s;
+  }
+
+  .card-tab.active { color: #e94560; border-bottom-color: #e94560; }
+
+  .tab-content { display: none; padding: 20px; }
+  .tab-content.active { display: block; }
+
+  /* SECTIONS */
+  .section-block {
+    margin-bottom: 18px;
+  }
+
+  .section-title {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: #aaa;
+    margin-bottom: 8px;
+    font-weight: 700;
+  }
+
+  .section-text {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 0.93rem;
+    line-height: 1.75;
+    color: #444;
+    white-space: pre-wrap;
+    border-left: 3px solid #e94560;
+  }
+
+  .scene-block {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+    border-left: 3px solid #f5a623;
+  }
+
+  .scene-block h5 {
+    font-size: 0.82rem;
+    color: #e94560;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+  }
+
+  .scene-block p {
+    font-size: 0.92rem;
+    line-height: 1.7;
+    color: #444;
+    white-space: pre-wrap;
+  }
+
+  .voice-line {
+    background: #fff3e0;
+    border-left: 3px solid #f5a623;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin: 8px 0;
+    font-size: 0.9rem;
+    font-style: italic;
+    color: #555;
+  }
+
+  .voice-line::before { content: '🎙️ '; }
+
+  .info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  @media(max-width:520px){ .info-grid { grid-template-columns: 1fr; } }
+
+  .info-item {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 12px 14px;
+  }
+
+  .info-item .lbl {
+    font-size: 0.72rem;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-bottom: 4px;
+  }
+
+  .info-item .val {
+    font-size: 0.93rem;
+    color: #333;
+    font-weight: 600;
+  }
+
+  /* COMMENTS */
+  .comments-wrap { padding: 20px; border-top: 2px solid #f0f2f5; }
+
+  .comments-wrap h4 {
+    font-size: 0.78rem;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+  }
+
+  .comment-item {
+    background: #fff9f0;
+    border: 1px solid #ffe0b2;
+    border-radius: 10px;
+    padding: 11px 14px;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  .comment-meta { font-size: 0.73rem; color: #bbb; margin-top: 5px; }
+
+  .comment-input-area { display: flex; gap: 10px; margin-top: 10px; }
+
+  .comment-input-area input {
+    flex: 1;
+    padding: 10px 13px;
+    border: 2px solid #e8e8e8;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+    font-family: inherit;
+  }
+
+  .comment-input-area input:focus { border-color: #e94560; }
+
+  .btn-comment {
+    padding: 10px 18px;
+    background: linear-gradient(135deg, #e94560, #f5a623);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.88rem;
+    white-space: nowrap;
+    transition: opacity 0.2s;
+  }
+
+  .btn-comment:hover { opacity: 0.85; }
+
+  /* ADD BUTTON */
+  .btn-add {
+    width: 100%;
+    padding: 15px;
+    background: white;
+    border: 2px dashed #e94560;
+    border-radius: 16px;
+    color: #e94560;
+    font-size: 0.97rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 30px;
+  }
+
+  .btn-add:hover { background: #fff0f3; }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: white;
+    border-radius: 20px;
+    padding: 28px;
+    width: 100%;
+    max-width: 560px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .modal h3 { font-size: 1.1rem; margin-bottom: 18px; color: #1a1a2e; }
+
+  .form-group { margin-bottom: 14px; }
+
+  .form-group label {
+    display: block;
+    font-size: 0.75rem;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-bottom: 5px;
+  }
+
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    width: 100%;
+    padding: 11px 13px;
+    border: 2px solid #e8e8e8;
+    border-radius: 10px;
+    font-size: 0.93rem;
+    outline: none;
+    transition: border-color 0.2s;
+    font-family: inherit;
+  }
+
+  .form-group textarea { min-height: 110px; resize: vertical; }
+  .form-group input:focus,
+  .form-group textarea:focus,
+  .form-group select:focus { border-color: #e94560; }
+
+  .modal-btns { display: flex; gap: 10px; margin-top: 18px; }
+
+  .btn-save {
+    flex: 1; padding: 12px;
+    background: linear-gradient(135deg, #e94560, #f5a623);
+    color: white; border: none;
+    border-radius: 10px; font-size: 0.97rem;
+    font-weight: 600; cursor: pointer;
+    transition: opacity 0.2s;
+  }
+
+  .btn-save:hover { opacity: 0.85; }
+
+  .btn-cancel {
+    flex: 1; padding: 12px;
+    background: #f0f2f5; color: #666;
+    border: none; border-radius: 10px;
+    font-size: 0.97rem; cursor: pointer;
+  }
+
+  .footer {
+    text-align: center;
+    padding: 20px;
+    color: #bbb;
+    font-size: 0.78rem;
+  }
+
+  /* STATS BAR */
+  .stats-bar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+  }
+
+  .stat-item {
+    background: white;
+    border-radius: 12px;
+    padding: 12px 18px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    text-align: center;
+    flex: 1;
+    min-width: 100px;
+  }
+
+  .stat-item .num {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #e94560;
+  }
+
+  .stat-item .lbl {
+    font-size: 0.75rem;
+    color: #aaa;
+    margin-top: 2px;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">
+    <div class="logo-icon">🎬</div>
+    <div>
+      <h1>Scenarii — Colina Verde</h1>
+      <span>Платформа для работы со сценариями</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- PROJECT INFO -->
+  <div class="project-card">
+    <h2>📋 Информация о проекте</h2>
+    <div class="dates-grid">
+      <div class="date-field">
+        <label>📅 Дата съёмки</label>
+        <input type="date" id="shootDate">
+      </div>
+      <div class="date-field">
+        <label>🚀 Дата публикации</label>
+        <input type="date" id="publishDate">
+      </div>
+      <div class="date-field">
+        <label>👤 Клиент</label>
+        <input type="text" id="clientName" placeholder="Colina Verde" value="Colina Verde">
+      </div>
+      <div class="date-field">
+        <label>📁 Проект</label>
+        <input type="text" id="projectName" placeholder="Название проекта..." value="Scenarii Video 2024">
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-bar">
+    <div class="stat-item">
+      <div class="num" id="statTotal">7</div>
+      <div class="lbl">Всего сценариев</div>
+    </div>
+    <div class="stat-item">
+      <div class="num" id="statRu">4</div>
+      <div class="lbl">🇷🇺 На русском</div>
+    </div>
+    <div class="stat-item">
+      <div class="num" id="statRo">3</div>
+      <div class="lbl">🇷🇴 Pe română</div>
+    </div>
+    <div class="stat-item">
+      <div class="num" id="statComments">0</div>
+      <div class="lbl">💬 Правок</div>
+    </div>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="filters">
+    <button class="filter-btn active" onclick="filterScenarios('all', this)">🌐 Все</button>
+    <button class="filter-btn" onclick="filterScenarios('ru', this)">🇷🇺 Русский</button>
+    <button class="filter-btn" onclick="filterScenarios('ro', this)">🇷🇴 Română</button>
+    <button class="filter-btn" onclick="filterScenarios('draft', this)">📝 Черновик</button>
+    <button class="filter-btn" onclick="filterScenarios('review', this)">👀 На проверке</button>
+    <button class="filter-btn" onclick="filterScenarios('approved', this)">✅ Одобрен</button>
+  </div>
+
+  <!-- LIST -->
+  <div id="scenariosList"></div>
+
+  <button class="btn-add" onclick="openModal()">＋ Добавить сценарий</button>
+</div>
+
+<div class="footer">🎬 Colina Verde · Видеопроизводство · Все права защищены</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h3>➕ Новый сценарий</h3>
+    <div class="form-group">
+      <label>Название</label>
+      <input type="text" id="mName" placeholder="Название сценария...">
+    </div>
+    <div class="form-group">
+      <label>Язык</label>
+      <select id="mLang">
+        <option value="ru">🇷🇺 Русский</option>
+        <option value="ro">🇷🇴 Română</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Формат</label>
+      <input type="text" id="mFormat" placeholder="Например: 6–8 сек, зацикленный...">
+    </div>
+    <div class="form-group">
+      <label>Статус</label>
+      <select id="mStatus">
+        <option value="draft">📝 Черновик</option>
+        <option value="review">👀 На проверке</option>
+        <option value="approved">✅ Одобрен</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Концепция / Идея</label>
+      <textarea id="mConcept" placeholder="Описание концепции..."></textarea>
+    </div>
+    <div class="form-group">
+      <label>Сценарий / Текст</label>
+      <textarea id="mScript" placeholder="Текст сценария..."></textarea>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">Отмена</button>
+      <button class="btn-save" onclick="saveScenario()">💾 Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SCENARIOS_KEY = 'colina_verde_v2';
+
+const defaultScenarios = [
+  {
+    id: 1,
+    name: "От сырого к готовому",
+    lang: "ru",
+    status: "review",
+    format: "6–8 сек · зацикленный ролик · без текста",
+    concept: "Видео строится на визуальной метафоре процесса приготовления — от сырого продукта до готового блюда, через движение скатерти как «ленты».\n\nКамера зафиксирована строго сверху (top view). На стол кладётся светлая скатерть, которую начинают плавно тянуть вниз — создаётся эффект конвейера.",
+    scenes: [
+      {
+        title: "Сцена 1 — Сырые ингредиенты",
+        text: "В кадр заезжает первый поднос:\n— сырые ингредиенты (мясо, картофель, овощи, специи)\n— рядом лежат кухонные инструменты (нож, чеснок, соль)\n— ощущение подготовки, «до»"
+      },
+      {
+        title: "Сцена 2 — Переход",
+        text: "Скатерть продолжает двигаться."
+      },
+      {
+        title: "Сцена 3 — Готовое блюдо",
+        text: "Следом появляется второй поднос:\n— готовое блюдо (красивая подача, прожаренное мясо, гарнир, соус)\n— рядом уже столовые приборы (вилка, нож, салфетка)\n— ощущение завершённости, «после»"
+      }
+    ],
+    why: "— визуально залипательно (движение + симметрия)\n— понятно без слов\n— легко масштабируется под разные блюда\n— формирует ощущение качества и процесса",
+    result: "Подсознательно усиливает восприятие: «здесь готовят, а не просто подают»",
+    comments: []
+  },
+  {
+    id: 2,
+    name: "За что нас любят",
+    lang: "ru",
+    status: "review",
+    format: "10–15 сек · плавный монтаж · закадровый голос",
+    concept: "Спокойный, эстетичный ролик с закадровым женским голосом, который мягко проводит зрителя через ощущения. Основа — не вау-эффект, а чувство уюта, вкуса и гармонии.",
+    scenes: [
+      {
+        title: "Блок 1 — Еда",
+        voice: "«Мы можем дать вам вкусную еду…»",
+        text: "— крупные планы блюд\n— текстуры, подача, детали еды"
+      },
+      {
+        title: "Блок 2 — Атмосфера и место",
+        voice: "«Но самое важное, что мы даём нашим гостям — это…»",
+        text: "— природа, зелень, воздух\n— общие виды территории\n— уютные зоны\n— детская площадка\n— купольные зоны\n— интерьер номера\n— атмосферные детали (погреб, свет, текстуры)\n— чистота пространства\n— улыбающийся персонал\n— живые, спокойные эмоции гостей"
+      },
+      {
+        title: "Финал",
+        text: "Общий красивый кадр локации / атмосферы\n(без перегруженного текста)"
+      }
+    ],
+    why: "— создаёт эмоциональное притяжение, а не просто информирует\n— усиливает премиум-восприятие\n— формирует ассоциацию с отдыхом и комфортом",
+    result: "Формирует ощущение: «Это место, куда приезжают за состоянием, а не просто поесть»",
+    comments: []
+  },
+  {
+    id: 3,
+    name: "Возвращаешь себя",
+    lang: "ru",
+    status: "review",
+    format: "10–15 сек · кинематографичный · контраст звука",
+    concept: "Кинематографичный ролик о контрасте между городским истощением и внутренним восстановлением. Через визуальный «телепорт» показывается простая мысль: иногда, чтобы продолжать, нужно остановиться и перезагрузиться.",
+    scenes: [
+      {
+        title: "Сцена 1 — Город / перегрузка",
+        voice: "«Город забирает энергию.»",
+        text: "— пробка, круг, шум машин\n— человек в машине или на улице\n— звонки, уведомления, суета\n— крупный план лица: усталость, перегруз"
+      },
+      {
+        title: "Сцена 2 — Переход (телепорт)",
+        text: "Вариант 1:\n— человек закрывает глаза / откидывает голову\n— звук резко обрывается\n— мягкий переход\n\nВариант 2 (с пуфиком):\n— человек держит мягкий пуфик\n— камера делает динамичный полуоборот\n— шум усиливается\n— он бросает пуфик вниз\n\nMATCH CUT: пуфик падает уже на территории Colina Verde\n— звук резко меняется на тишину и природу"
+      },
+      {
+        title: "Сцена 3 — Восстановление",
+        voice: "«Но всего в нескольких минутах есть место, где ты возвращаешь себя.»",
+        text: "— общий план: зелень, воздух, пространство\n— человек уже в локации\n— кадры природы, территории, уюта\n— он со спины смотрит на вид\n— в руках бокал вина / сок"
+      },
+      {
+        title: "Финал",
+        text: "— спокойный широкий кадр\n— пауза, дыхание кадра\n— без перегруженного текста"
+      }
+    ],
+    why: "— сильный эмоциональный инсайт (перегруз города)\n— понятный и визуально цепляющий переход\n— создаёт желание «сбежать прямо сейчас»\n— усиливает позиционирование как места-убежища",
+    result: "Формируется чёткая ассоциация: Colina Verde — место, где ты возвращаешь себя",
+    comments: []
+  },
+  {
+    id: 4,
+    name: "Два сценария одного дня",
+    lang: "ru",
+    status: "review",
+    format: "Сплит-экран · параллельный монтаж · закадровый голос",
+    concept: "Экран разделён горизонтально: сверху — Colina Verde, снизу — дом. Один и тот же тайминг, параллельный монтаж. Максимально одинаковые ракурсы в начале, синхронные действия. Сверху чуть более «воздушно» и светло, снизу — нейтрально, без утрирования негатива.",
+    scenes: [
+      {
+        title: "1. Утро",
+        voice: "«Один и тот же выходной… может пройти по-разному.» / «Утро начинается одинаково…» / «Но дальше — это уже выбор.»",
+        text: "↑ Colina Verde: семья просыпается, выходит из дома / садится в машину\n↓ Дом: семья просыпается, идёт на кухню"
+      },
+      {
+        title: "2. Завтрак",
+        voice: "«Можно не спешить…»",
+        text: "↑ Colina Verde: лёгкий красивый завтрак\n↓ Дом: обычный домашний завтрак"
+      },
+      {
+        title: "3. День",
+        voice: "«Можно просто провести время…» / «А можно провести его чуть по-другому.»",
+        text: "↑ Colina Verde: прогулка, виды, животные, территория\n↓ Дом: семья смотрит телевизор"
+      },
+      {
+        title: "4. Время с ребёнком",
+        voice: "«Можно играть дома…» / «А можно выйти с ним туда, где всё вокруг — уже игра.»",
+        text: "↑ Colina Verde: ребёнок на площадке, бегает, смеётся\n↓ Дом: семья играет с ребёнком на ковре"
+      },
+      {
+        title: "5. Перезагрузка",
+        voice: "«Можно просто отдохнуть…» / «А можно действительно переключиться.»",
+        text: "↑ Colina Verde: пуфики, природа, расслабление\n↓ Дом: кто-то лежит / дремлет"
+      },
+      {
+        title: "6. Вечер",
+        voice: "«Вечер всё равно наступит…»",
+        text: "↑ Colina Verde: закат, атмосфера\n↓ Дом: темнеет в квартире"
+      },
+      {
+        title: "7. Сон ребёнка",
+        voice: "(без текста — эмоциональный момент)",
+        text: "↑ Colina Verde: ребёнок засыпает на природе (плед / пуфик / руки родителей)\n↓ Дом: ребёнок спит в кровати"
+      },
+      {
+        title: "8. Ужин",
+        voice: "«И ужин тоже будет…»",
+        text: "↑ Colina Verde: атмосферный ужин (мясо, вино, свет)\n↓ Дом: обычный ужин"
+      },
+      {
+        title: "9. Финал",
+        voice: "«Вопрос только в том, каким этот день останется в памяти.» / «Иногда небольшая смена — меняет всё.»",
+        text: "↑ Colina Verde: счастливая семья, вид, атмосфера\n↓ Дом: спокойный, но обычный вечер"
+      }
+    ],
+    why: "— мощный сравнительный эффект без негатива\n— зритель сам делает выбор\n— универсально для семейной аудитории",
+    result: "Чёткое, но мягкое ощущение: дело не во времени — дело в том, как ты его проводишь",
+    comments: []
+  },
+  {
+    id: 5,
+    name: "Cum a apărut zeama cu tăiței de casă",
+    lang: "ro",
+    status: "review",
+    format: "Reels · voce off + cadre de gătit + cadre istorice",
+    concept: "Bucătarul-șef va găti zeama și în paralel va povesti istoria apariției ei. Primele cadre — bucătarul vorbește direct la cameră. Apoi combinăm cadrele de gătit cu imagini vechi (cum gătea bunica). Sunet — obligatoriu ceva moldovenesc.",
+    scenes: [
+      {
+        title: "Introducere",
+        voice: "«Știi cum a apărut zeama cu tăiței de casă?»",
+        text: "Bucătarul vorbește direct la cameră"
+      },
+      {
+        title: "Istorie — sec. XV–XVIII",
+        voice: "«Totul începe cu sute de ani în urmă… prin secolele XV–XVIII, în gospodăriile simple din Republica Moldova.»",
+        text: "Cadre cu gătit + imagini istorice (sau generate AI)"
+      },
+      {
+        title: "Tăieții de casă",
+        voice: "«Atunci nu existau rețete scrise. Oamenii găteau din ce aveau: o găină din curte, făină, ouă… Așa apar primii tăiței de casă — făcuți manual, întinși și tăiați fin.»",
+        text: "Cadre cu prepararea tăițeilor de casă"
+      },
+      {
+        title: "Apariția borșului",
+        voice: "«La început, era doar o supă simplă de pui. Dar prin secolele XVII–XVIII apare borșul acru… și schimbă totul. Dintr-o supă obișnuită, devine zeama pe care o știm azi.»",
+        text: "Cadre cu zeama finală, aburindă"
+      },
+      {
+        title: "Tradiția",
+        voice: "«Mai târziu, în secolul XIX, apar pastele industriale… dar în sate, tradiția rămâne aceeași. Pentru că zeama nu e despre comoditate. E despre gust. Despre familie. Despre rădăcini.»",
+        text: "Cadre calde, atmosferice"
+      },
+      {
+        title: "Final — Call to action",
+        voice: "«Vrei să simți gustul autentic, exact cum era odată? Te așteptăm la Colina Verde — să descoperi Moldova… într-o farfurie.»",
+        text: "Cadru final cu zeama servită la Colina Verde"
+      }
+    ],
+    why: "— storytelling autentic moldovenesc\n— educativ + emoțional\n— sunet tradițional creează atmosferă",
+    result: "Asociere puternică: Colina Verde = autenticitate și tradiție",
+    comments: []
+  },
+  {
+    id: 6,
+    name: "Cum au apărut colțunașii",
+    lang: "ro",
+    status: "review",
+    format: "Reels · același format ca zeama · cadre istorice + hartă animată",
+    concept: "Același format ca și în reels-ul cu zeama. Când începe să povestească despre China — cadre din China Antică. Când vorbește despre răspândirea în Europa — arătăm o hartă cu săgeți.",
+    scenes: [
+      {
+        title: "Introducere",
+        voice: "«Știi de unde au apărut colțunașii?»",
+        text: "Bucătarul vorbește la cameră"
+      },
+      {
+        title: "China Antică — acum 2000 de ani",
+        voice: "«Povestea lor începe acum aproape 2000 de ani… tocmai în China. Oamenii au descoperit ceva simplu, dar genial: aluat… umplut cu orice aveau la îndemână.»",
+        text: "⚠️ Cadre din China Antică (obligatoriu)"
+      },
+      {
+        title: "Răspândirea în Europa",
+        voice: "«Ideea a călătorit mii de kilometri, până a ajuns în Europa de Est.»",
+        text: "⚠️ Hartă animată cu săgeți (obligatoriu)"
+      },
+      {
+        title: "Variantele naționale",
+        voice: "«Aici, fiecare țară i-a dat forma ei: în Ucraina — vareniki, în Polonia — pierogi, iar în Republica Moldova — colțunași.»",
+        text: "Cadre cu colțunași moldovenești"
+      },
+      {
+        title: "Tradiția familiei",
+        voice: "«Prin secolele XVII–XIX, devin nelipsiți din casele oamenilor. Pentru că erau simpli, sățioși… și puteau fi umpluți cu orice: brânză, cartofi, varză sau chiar fructe. Dar cel mai important… colțunașii nu se făceau niciodată singur. Era un ritual. Toată familia în jurul mesei. Râsete, povești… și mâini pline de făină.»",
+        text: "Cadre calde cu familia, gătit împreună"
+      },
+      {
+        title: "Final — Call to action",
+        voice: "«Colțunașii sunt gata. Tu când vii?»",
+        text: "Cadru final cu colțunași la Colina Verde"
+      }
+    ],
+    why: "— format dovedit (același ca zeama)\n— vizual dinamic (China + hartă)\n— final cu întrebare directă — engagement maxim",
+    result: "Creează dorința imediată de a vizita și a gusta",
+    comments: []
+  },
+  {
+    id: 7,
+    name: "Cum au apărut plăcintele",
+    lang: "ro",
+    status: "review",
+    format: "Reels · același format · cadre istorice",
+    concept: "Același format ca și celelalte reels-uri istorice. Povestea plăcintelor de la Egiptul Antic până la tradițiile moldovenești.",
+    scenes: [
+      {
+        title: "Introducere",
+        voice: "«Te-ai întrebat vreodată de unde vin plăcintele?»",
+        text: "Bucătarul vorbește la cameră"
+      },
+      {
+        title: "Originile — Egipt Antic și Grecia",
+        voice: "«Povestea lor începe cu mii de ani în urmă, în Egiptul Antic și Grecia Antică. Oamenii au descoperit ceva simplu: aluat… și o umplutură înăuntru. La început erau rudimentare — făcute din cereale și miere sau carne.»",
+        text: "Cadre istorice — Egipt Antic, Grecia"
+      },
+      {
+        title: "Roma Antică",
+        voice: "«Apoi, în Roma Antică, apar primele rețete adevărate. Plăcintele devin mai complexe… mai gustoase.»",
+        text: "Cadre istorice — Roma Antică"
+      },
+      {
+        title: "Evul Mediu — cuceresc Europa",
+        voice: "«În Evul Mediu, ele cuceresc toată Europa. Pentru că erau practice — puteai să le iei cu tine oriunde.»",
+        text: "Cadre medievale / hartă Europa"
+      },
+      {
+        title: "Moldova — sec. XVI–XIX",
+        voice: "«Iar în Republica Moldova, prin secolele XVI–XIX, plăcintele devin parte din viața de zi cu zi. Cu brânză, cartofi, varză sau dovleac… fiecare familie avea propria rețetă.»",
+        text: "Cadre cu plăcinte moldovenești, gătit tradițional"
+      },
+      {
+        title: "Tradiția",
+        voice: "«Dar cel mai important… plăcintele au devenit parte din tradițiile moldovenești. Se făceau la sărbători, la mese de familie, la momente importante. Cu rețete transmise din generație în generație. Și cu același gust care adună oamenii la masă. Așa au rămas până azi — tradiție, în cea mai simplă și gustoasă formă.»",
+        text: "Cadre calde, atmosferice, familie"
+      },
+      {
+        title: "Final — Call to action",
+        voice: "«Te așteptăm la Colina Verde — acolo unde plăcintele au gust de acasă.»",
+        text: "Cadru final cu plăcinte la Colina Verde"
+      }
+    ],
+    why: "— completează seria istorică (zeama + colțunași + plăcinte)\n— educativ și emoțional\n— construiește brandul ca gardian al tradițiilor",
+    result: "Trilogie de conținut autentic moldovenesc pentru Colina Verde",
+    comments: []
+  }
+];
+
+let scenarios = JSON.parse(localStorage.getItem(SCENARIOS_KEY) || 'null') || defaultScenarios;
+let currentFilter = 'all';
+
+function saveData() {
+  localStorage.setItem(SCENARIOS_KEY, JSON.stringify(scenarios));
+  updateStats();
+}
+
+function updateStats() {
+  const totalComments = scenarios.reduce((a, s) => a + s.comments.length, 0);
+  document.getElementById('statTotal').textContent = scenarios.length;
+  document.getElementById('statRu').textContent = scenarios.filter(s => s.lang === 'ru').length;
+  document.getElementById('statRo').textContent = scenarios.filter(s => s.lang === 'ro').length;
+  document.getElementById('statComments').textContent = totalComments;
+}
+
+function filterScenarios(type, btn) {
+  currentFilter = type;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderScenarios();
+}
+
+function getStatusBadge(status) {
+  const map = {
+    draft: '<span class="status-badge status-draft">📝 Черновик</span>',
+    review: '<span class="status-badge status-review">👀 На проверке</span>',
+    approved: '<span class="status-badge status-approved">✅ Одобрен</span>'
+  };
+  return map[status] || '';
+}
+
+function renderScenarios() {
+  const list = document.getElementById('scenariosList');
+  let filtered = scenarios;
+
+  if (currentFilter === 'ru') filtered = scenarios.filter(s => s.lang === 'ru');
+  else if (currentFilter === 'ro') filtered = scenarios.filter(s => s.lang === 'ro');
+  else if (['draft','review','approved'].includes(currentFilter)) filtered = scenarios.filter(s => s.status === currentFilter);
+
+  if (filtered.length === 0) {
+    list.innerHTML = `<div style="text-align:center;padding:50px;color:#bbb;"><div style="font-size:3rem;margin-bottom:15px;">📄</div><p>Сценариев не найдено</p></div>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map(s => {
+    const flag = s.lang === 'ru' ? '🇷🇺' : '🇷🇴';
+    const langLabel = s.lang === 'ru' ? 'Русский' : 'Română';
+    const scenesHtml = (s.scenes || []).map(sc => `
+      <div class="scene-block">
+        <h5>${sc.title}</h5>
+        ${sc.voice ? `<div class="voice-line">${sc.voice}</div>` : ''}
+        <p>${sc.text}</p>
+      </div>
+    `).join('');
+
+    const commentsHtml = s.comments.length === 0
+      ? '<p style="color:#ccc;font-size:0.88rem;margin-bottom:10px;">Правок пока нет</p>'
+      : s.comments.map(c => `
+          <div class="comment-item">
+            ${c.text}
+            <div class="comment-meta">👤 ${c.author} · ${c.date}</div>
+          </div>`).join('');
+
+    return `
+      <div class="scenario-card" id="card-${s.id}">
+        <div class="scenario-header" onclick="toggleCard(${s.id})">
+          <div class="scenario-header-left">
+            <h3>${flag} ${s.name}</h3>
+            <div class="scenario-meta">
+              <span class="badge badge-lang-${s.lang}">${langLabel}</span>
+              ${getStatusBadge(s.status)}
+              <span class="badge badge-format">⏱ ${s.format}</span>
+            </div>
+          </div>
+          <div class="header-right">
+            <span class="comments-count">💬 ${s.comments.length}</span>
+            <span class="arrow" id="arrow-${s.id}">▼</span>
+          </div>
+        </div>
+        <div class="scenario-body" id="body-${s.id}">
+          <div class="card-tabs">
+            <div class="card-tab active" onclick="switchTab(${s.id}, 'concept', this)">💡 Концепция</div>
+            <div class="card-tab" onclick="switchTab(${s.id}, 'scenes', this)">🎬 Сцены</div>
+            <div class="card-tab" onclick="switchTab(${s.id}, 'info', this)">📊 Детали</div>
+          </div>
+
+          <div class="tab-content active" id="tab-concept-${s.id}">
+            <div class="section-block">
+              <div class="section-title">Концепция</div>
+              <div class="section-text">${s.concept}</div>
+            </div>
+          </div>
+
+          <div class="tab-content" id="tab-scenes-${s.id}">
+            ${scenesHtml}
+          </div>
+
+          <div class="tab-content" id="tab-info-${s.id}">
+            <div class="info-grid">
+              <div class="info-item">
+                <div class="lbl">Язык</div>
+                <div class="val">${flag} ${langLabel}</div>
+              </div>
+              <div class="info-item">
+                <div class="lbl">Формат</div>
+                <div class="val">${s.format}</div>
+              </div>
+              <div class="info-item" style="grid-column:1/-1">
+                <div class="lbl">Почему это работает</div>
+                <div class="val" style="font-weight:400;font-size:0.88rem;line-height:1.6;white-space:pre-wrap">${s.why}</div>
+              </div>
+              <div class="info-item" style="grid-column:1/-1">
+                <div class="lbl">Результат для бренда</div>
+                <div class="val" style="font-weight:400;font-size:0.88rem;line-height:1.6">${s.result}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="comments-wrap">
+            <h4>💬 Правки и пожелания</h4>
+            <div id="comments-${s.id}">${commentsHtml}</div>
+            <div class="comment-input-area">
+              <input type="text" id="ci-${s.id}" placeholder="Написать правку или пожелание...">
+              <button class="btn-comment" onclick="addComment(${s.id})">Отправить</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function toggleCard(id) {
+  const body = document.getElementById(`body-${id}`);
+  const arrow = document.getElementById(`arrow-${id}`);
+  body.classList.toggle('open');
+  arrow.classList.toggle('open');
+}
+
+function switchTab(id, tab, el) {
+  ['concept','scenes','info'].forEach(t => {
+    document.getElementById(`tab-${t}-${id}`).classList.remove('active');
+  });
+  document.getElementById(`tab-${tab}-${id}`).classList.add('active');
+  el.closest('.card-tabs').querySelectorAll('.card-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function addComment(id) {
+  const input = document.getElementById(`ci-${id}`);
+  const text = input.value.trim();
+  if (!text) return;
+  const s = scenarios.find(s => s.id === id);
+  const today = new Date().toLocaleDateString('ru-RU');
+  s.comments.push({ text, date: today, author: 'Клиент' });
+  saveData();
+  input.value = '';
+  renderScenarios();
+  setTimeout(() => {
+    const body = document.getElementById(`body-${id}`);
+    const arrow = document.getElementById(`arrow-${id}`);
+    if (body) { body.classList.add('open'); arrow.classList.add('open'); }
+  }, 10);
+}
+
+function openModal() {
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  ['mName','mFormat','mConcept','mScript'].forEach(id => document.getElementById(id).value = '');
+}
+
+function saveScenario() {
+  const name = document.getElementById('mName').value.trim();
+  const lang = document.getElementById('mLang').value;
+  const format = document.getElementById('mFormat').value.trim();
+  const status = document.getElementById('mStatus').value;
+  const concept = document.getElementById('mConcept').value.trim();
+  const script = document.getElementById('mScript').value.trim();
+  if (!name || !concept) { alert('Заполните название и концепцию!'); return; }
+  scenarios.push({
+    id: Date.now(), name, lang, status,
+    format: format || '—',
+    concept,
+    scenes: script ? [{ title: 'Сценарий', text: script }] : [],
+    why: '—', result: '—',
+    comments: []
+  });
+  saveData();
+  closeModal();
+  renderScenarios();
+}
+
+renderScenarios();
+updateStats();
+</script>
+</body>
+</html>
